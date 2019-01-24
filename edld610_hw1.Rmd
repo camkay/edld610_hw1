@@ -23,7 +23,6 @@ knitr::opts_chunk$set(echo = TRUE,
 library(rio)
 library(here)
 library(tidyverse)
-library(lubridate)
 library(magrittr)
 
 #Disable scientific notation
@@ -117,11 +116,21 @@ data_std_assess %>%
   count(id_student, id_assessment) %>% 
   filter(n > 1)
 
+####################################
 #Identify key in student VLE file:
 #NO KEY
+####################################
 
 data_std_vle %>% 
   count(code_module, code_presentation, id_student, id_site, date, sum_click) %>% 
+  filter(n > 1)
+
+#Create surrogate key?
+data_std_vle %<>% 
+  rowid_to_column()
+
+data_std_vle %>%
+  count(rowid) %>%
   filter(n > 1)
 
 ```
