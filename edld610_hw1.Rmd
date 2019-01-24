@@ -1,30 +1,157 @@
 ---
-title: "edld610_hw1"
-author: "Cameron Kay"
+title: "Homework 1"
+author: "Cameron Kay, Lea Frank, and Ashley L. Miller"
 date: "1/23/2019"
-output: html_document
+output:
+  html_document:
+    highlight: zenburn
+    theme: lumen
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
 ---
 
-```{r setup, echo = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE,
+                      fig.width = 7.5,
+                      fig.height = 4.0)
+
+#load packages
+library(rio)
+library(here)
+library(tidyverse)
+library(lubridate)
+library(magrittr)
+
+#Disable scientific notation
+options(scipen = 999)
+
 ```
 
-## R Markdown
+### Load the data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r load_data}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#load data (7 files total)
 
-```{r cars}
-summary(cars)
+data_assess <- import(here::here("data", "assessments.csv"),
+                      setclass = "tbl_df") %>%
+  janitor::clean_names()
+
+data_courses <- import(here::here("data", "courses.csv"),
+                       setclass = "tbl_df") %>% 
+  janitor::clean_names()
+
+data_std_assess <- import(here::here("data", "studentAssessment.csv"),
+                          setclass = "tbl_df") %>% 
+  janitor::clean_names()
+
+data_std_info <- import(here::here("data", "studentInfo.csv"),
+               setclass = "tbl_df") %>% 
+  janitor::clean_names()
+
+data_std_regist <- import(here::here("data", "studentRegistration.csv"),
+               setclass = "tbl_df") %>% 
+  janitor::clean_names()
+
+data_std_vle <- import(here::here("data", "studentVle.csv"),
+               setclass = "tbl_df") %>% 
+  janitor::clean_names()
+
+#For some reason, in the data_vle file, the columns for week_from and week_to consist of all NAs????
+data_vle <- import(here::here("data", "vle.csv"),
+               setclass = "tbl_df") %>% 
+  characterize() %>%
+  janitor::clean_names()
+
 ```
 
-## Including Plots
+### This primary components of this assignment are highly open-ended. These are to:
 
-You can also embed plots, for example:
+  + **Use at least 3 mutating joins**
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r identify_keys}
+
+#Identify key in course data:
+#Key = code_module + code_presentation
+
+data_courses %>% 
+  count(code_module, code_presentation) %>% 
+  filter(n > 1)
+
+#Identify key in assessment data:
+#Key = id_assessment
+
+data_assess %>% 
+  count(id_assessment) %>% 
+  filter(n > 1)
+
+#Identify key in VLE data:
+#Key = id_site
+
+data_vle %>% 
+  count(id_site) %>% 
+  filter(n > 1)
+
+#Identify key in student info data:
+#Key = code_module + code_presentation + id_student
+
+data_std_info %>% 
+  count(code_module, code_presentation,id_student) %>% 
+  filter(n > 1)
+
+#Identify key in student registration file
+#Key = code_module + code_presentation + id_student
+
+data_std_regist %>% 
+  count(code_module, code_presentation, id_student) %>% 
+  filter(n > 1)
+
+#Identify key in student assessment data:
+#Key = id_student + id_assessment
+
+data_std_assess %>% 
+  count(id_student, id_assessment) %>% 
+  filter(n > 1)
+
+#Identify key in student VLE file:
+#NO KEY
+
+data_std_vle %>% 
+  count(code_module, code_presentation, id_student, id_site, date, sum_click) %>% 
+  filter(n > 1)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r mutating_joins}
+
+
+
+```
+
+  + **Use at least 1 filtering join**
+
+```{r filtering join}
+
+
+
+```
+
+  + **Produce at least 3 data displays**
+
+```{r data_visualizations}
+
+
+
+```
+  
+### Following the completion of these requirements, please reproduce the following figure:
+
+```{r reproduce_figure}
+
+
+
+```
