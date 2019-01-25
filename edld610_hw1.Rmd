@@ -19,20 +19,20 @@ knitr::opts_chunk$set(echo = TRUE,
                       fig.width = 7.5,
                       fig.height = 4.0)
 
-#load packages
+# load packages
 library(rio)
 library(here)
 library(tidyverse)
 library(magrittr)
 
-#Disable scientific notation
+# disable scientific notation
 options(scipen = 999)
 
 ```
 
 ```{r load_data}
 
-#load data (7 files total)
+# load data (7 files total)
 
 data_assess <- import(here::here("data", "assessments.csv"),
                       setclass = "tbl_df") %>%
@@ -58,7 +58,7 @@ data_std_vle <- import(here::here("data", "studentVle.csv"),
                setclass = "tbl_df") %>% 
   janitor::clean_names()
 
-#For some reason, in the data_vle file, the columns for week_from and week_to consist of all NAs????
+# for some reason, in the data_vle file, the columns for week_from and week_to consist of all NAs????
 data_vle <- import(here::here("data", "vle.csv"),
                setclass = "tbl_df") %>% 
   characterize() %>%
@@ -68,58 +68,58 @@ data_vle <- import(here::here("data", "vle.csv"),
 
 ```{r identify_keys, include=FALSE}
 
-#Identify key in course data:
-#Key = code_module + code_presentation
+# identify key in course data:
+# key = code_module + code_presentation
 
 data_courses %>% 
   count(code_module, code_presentation) %>% 
   filter(n > 1)
 
-#Identify key in assessment data:
-#Key = id_assessment
+# identify key in assessment data:
+# key = id_assessment
 
 data_assess %>% 
   count(id_assessment) %>% 
   filter(n > 1)
 
-#Identify key in VLE data:
-#Key = id_site
+# identify key in VLE data:
+# key = id_site
 
 data_vle %>% 
   count(id_site) %>% 
   filter(n > 1)
 
-#Identify key in student info data:
-#Key = code_module + code_presentation + id_student
+# identify key in student info data:
+# key = code_module + code_presentation + id_student
 
 data_std_info %>% 
   count(code_module, code_presentation,id_student) %>% 
   filter(n > 1)
 
-#Identify key in student registration file
-#Key = code_module + code_presentation + id_student
+# identify key in student registration file
+# key = code_module + code_presentation + id_student
 
 data_std_regist %>% 
   count(code_module, code_presentation, id_student) %>% 
   filter(n > 1)
 
-#Identify key in student assessment data:
-#Key = id_student + id_assessment
+# identify key in student assessment data:
+# key = id_student + id_assessment
 
 data_std_assess %>% 
   count(id_student, id_assessment) %>% 
   filter(n > 1)
 
 ####################################
-#Identify key in student VLE file:
-#NO KEY
+# Identify key in student VLE file:
+# NO KEY
 ####################################
 
 data_std_vle %>% 
   count(code_module, code_presentation, id_student, id_site, date, sum_click) %>% 
   filter(n > 1)
 
-#Create surrogate key?
+# create surrogate key?
 data_std_vle %<>% 
   rowid_to_column()
 
@@ -137,10 +137,10 @@ data_std_vle %>%
 
 ash_data <- left_join(data_std_assess, data_std_info) #joined by id_student
 
-#identify key
-#ash_data %>% 
-  #count(id_assessment, id_student, code_module, code_presentation) %>% #key
-  #filter(n > 1)
+# identify key
+# ash_data %>% 
+  # count(id_assessment, id_student, code_module, code_presentation) %>% key
+  # filter(n > 1)
 
 ash_data <- ash_data %>%
   group_by(id_student) %>%
