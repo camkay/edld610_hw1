@@ -198,6 +198,20 @@ cam_data <- left_join(data_std_info, data_std_vle, by = "id_student")
 # drop redundant columns
 cam_data %<>%
   select(-contains(".y"))
+
+#summarize students average number of clicks per module
+cam_data %<>%
+  group_by(id_student) %>% # group by student
+  summarize(sum_click_m = mean(sum_click, na.rm = TRUE)) %>% # calculate average number of clicks on VLE materials
+  filter(!is.na(sum_click_m)) %>% # remove students who only visited once
+  left_join(data_std_info) %>% # join demographics with summarized data
+  select(id_student, # select only the columns of interest 
+         sum_click_m,
+         gender,
+         region,
+         highest_education,
+         imd_band,
+         age_band)
 ```
 
   + **Resulting data visualization(s)**
