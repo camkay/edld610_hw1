@@ -203,7 +203,7 @@ cam_data %<>%
 cam_data %<>%
   group_by(id_student) %>% # group by student
   summarize(sum_click_m = mean(sum_click, na.rm = TRUE)) %>% # calculate average number of clicks on VLE materials
-  filter(!is.na(sum_click_m)) %>% # remove students who only visited once
+  filter(!is.na(sum_click_m)) %>% # remove students who only visited once or who have no imd_band
   left_join(data_std_info) %>% # join demographics with summarized data
   select(id_student, # select only the columns of interest 
          sum_click_m,
@@ -211,12 +211,37 @@ cam_data %<>%
          region,
          highest_education,
          imd_band,
-         age_band)
+         age_band) %>%
+  filter(imd_band != "", # drop cases with no value for imd band
+         age_band != "55<=") %>% # drop cases with insufficient data for age band
+  mutate(region = if_else(region != "Scotland" & # mutate regions to sort by countries
+                          region != "Ireland" &
+                          region != "Wales", 
+                          "England", 
+                          region),
+         imd_band_num = parse_number(imd_band)) # change imd_band from a factor to a numeric
 ```
 
   + **Resulting data visualization(s)**
   
 ```{r cam_data_visualization}
+# plot
+ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
+  geom_jitter(size = .7, alpha = .7, aes(color = sum_click_m), width = 10, height = 1) +
+  geom_smooth(method = "lm", se = FALSE, color = "deeppink2", lwd = 1.5, alpha = .8) +
+  theme_bw() +
+  theme(strip.background = element_rect(fill = "gray22"),
+        strip.text = element_text(colour = "white"),
+        legend.position = "none") +
+  ylim(0, 10) +
+  scale_color_gradient2(low = "cyan", mid = "dodgerblue3", high = "dodgerblue3", midpoint = 8) +
+  facet_grid(~region) +
+  labs(title = "Figure 3.",
+       subtitle = "Relationship between deprivation and amount of engagement with VLE materials",
+       x = "Index of Multiple Deprivation", 
+       y = "Mean interactions with VLE",
+     caption = "Data from https://analyse.kmi.open.ac.uk/open_dataset")
+  
 
 
 
