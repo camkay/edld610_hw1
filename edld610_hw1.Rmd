@@ -187,9 +187,22 @@ ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_educa
 
 ```
 
-#### 2) Mutating join/data visualization #2
+#### 2) Mutating join/data visualization #2 (Cam's)
 
-```{r mutatejoin2}
+  + **Mutating join**
+
+```{r cam_mutating_join}
+# join student information with student vle use
+cam_data <- left_join(data_std_info, data_std_vle, by = "id_student")
+
+# drop redundant columns
+cam_data %<>%
+  select(-contains(".y"))
+```
+
+  + **Resulting data visualization(s)**
+  
+```{r cam_data_visualization}
 
 
 
