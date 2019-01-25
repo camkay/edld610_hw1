@@ -60,7 +60,6 @@ data_std_vle <- import(here::here("data", "studentVle.csv"),
                setclass = "tibble") %>% 
   janitor::clean_names()
 
-# for some reason, in the data_vle file, the columns for week_from and week_to consist of all NAs????
 data_vle <- import(here::here("data", "vle.csv"),
                setclass = "tibble") %>% 
   characterize() %>%
