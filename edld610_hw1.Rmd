@@ -71,6 +71,8 @@ data_vle <- import(here::here("data", "vle.csv"),
 ### This primary components of this assignment are highly open-ended. These are to:
 
   + **Use at least 3 mutating joins**
+  
+  + **Produce at least 3 data displays**
 
 ```{r identify_keys}
 
@@ -135,7 +137,9 @@ data_std_vle %>%
 
 ```
 
-```{r mutating_joins}
+#### Mutating join/data visualization #1 (Ashley's)
+
+```{r ash_mutating_join}
 
 ash_data <- left_join(data_std_assess, data_std_info) #joined by id_student
 
@@ -143,25 +147,71 @@ ash_data %>%
   count(id_assessment, id_student, code_module, code_presentation) %>% #key
   filter(n > 1)
 
+ash_data <- ash_data %>%
+  group_by(id_student) %>%
+  summarize(mean_score = mean(score)) %>%
+  left_join(ash_data)
+
+ash_data%<>%
+  select(id_student, mean_score, gender:age_band, disability) %>%
+  distinct(id_student, .keep_all = TRUE)
+
 ```
 
-  + **Use at least 1 filtering join**
+```{r ash_data_visualization}
+
+ggplot(ash_data, aes(x = age_band, y = mean_score, fill = age_band)) +
+  geom_violin() +
+  ggforce::geom_sina(size = 0.5) +
+  geom_boxplot(alpha = 0) +
+  scale_fill_manual(values = c("#157381", "#4D306E", "#C0A5E1")) +
+  facet_wrap(~gender) +
+  theme_bw() +
+  labs(title = "Figure 1.",
+       subtitle = "Assessment score distributions by age group and gender",
+       x = "Age Group", 
+       y = "Mean Assessment Score") +
+  theme(legend.position = "none")
+
+ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_education)) +
+  geom_violin() +
+  ggforce::geom_sina(size = 0.5) +
+  geom_boxplot(alpha = 0) +
+  scale_fill_viridis_d() +
+  theme_bw() +
+  labs(title = "Figure 2.",
+       subtitle = "Assessment score distributions by level of education",
+       x = "Education Level", 
+       y = "Mean Assessment Score") +
+  theme(legend.position = "none")
+
+```
+
+#### Join/Data visualization #2
+
+```{r mutatejoin2}
+
+
+
+```
+
+#### Join/Data visualization #3
+
+```{r mutatejoin3}
+
+
+
+```
+
+#### Filter join
 
 ```{r filtering join}
 
 
 
 ```
-
-  + **Produce at least 3 data displays**
-
-```{r data_visualizations}
-
-
-
-```
   
-### Following the completion of these requirements, please reproduce the following figure:
+### Reproduce the following figure:
 
 ```{r reproduce_figure}
 
