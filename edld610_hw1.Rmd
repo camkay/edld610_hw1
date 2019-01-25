@@ -30,8 +30,6 @@ options(scipen = 999)
 
 ```
 
-### Load the data
-
 ```{r load_data}
 
 #load data (7 files total)
@@ -68,13 +66,7 @@ data_vle <- import(here::here("data", "vle.csv"),
 
 ```
 
-### This primary components of this assignment are highly open-ended. These are to:
-
-  + **Use at least 3 mutating joins**
-  
-  + **Produce at least 3 data displays**
-
-```{r identify_keys}
+```{r identify_keys, include=FALSE}
 
 #Identify key in course data:
 #Key = code_module + code_presentation
@@ -137,15 +129,18 @@ data_std_vle %>%
 
 ```
 
-#### Mutating join/data visualization #1 (Ashley's)
+#### 1) Mutating join/data visualization #1 (Ashley's)
+
+  + **Mutating join**
 
 ```{r ash_mutating_join}
 
 ash_data <- left_join(data_std_assess, data_std_info) #joined by id_student
 
-ash_data %>% 
-  count(id_assessment, id_student, code_module, code_presentation) %>% #key
-  filter(n > 1)
+#identify key
+#ash_data %>% 
+  #count(id_assessment, id_student, code_module, code_presentation) %>% #key
+  #filter(n > 1)
 
 ash_data <- ash_data %>%
   group_by(id_student) %>%
@@ -157,6 +152,8 @@ ash_data%<>%
   distinct(id_student, .keep_all = TRUE)
 
 ```
+
+  + **Resulting data visualization(s)**
 
 ```{r ash_data_visualization}
 
@@ -187,7 +184,7 @@ ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_educa
 
 ```
 
-#### Join/Data visualization #2
+#### 2) Mutating join/data visualization #2
 
 ```{r mutatejoin2}
 
@@ -195,7 +192,7 @@ ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_educa
 
 ```
 
-#### Join/Data visualization #3
+#### 3) Mutating join/data visualization #3
 
 ```{r mutatejoin3}
 
@@ -203,7 +200,7 @@ ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_educa
 
 ```
 
-#### Filter join
+#### 4) Filter join
 
 ```{r filtering join}
 
@@ -211,7 +208,7 @@ ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_educa
 
 ```
   
-### Reproduce the following figure:
+#### 5) Reproduce the following figure:
 
 ```{r reproduce_figure}
 
