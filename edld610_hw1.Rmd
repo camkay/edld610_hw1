@@ -13,6 +13,7 @@ output:
 
 ```{r setup, include = FALSE}
 
+# set knitr options
 knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE,
                       warning = FALSE,
@@ -94,7 +95,7 @@ data_vle %>%
 # key = code_module + code_presentation + id_student
 
 data_std_info %>% 
-  count(code_module, code_presentation,id_student) %>% 
+  count(code_module, code_presentation, id_student) %>% 
   filter(n > 1)
 
 # identify key in student registration file
@@ -136,7 +137,7 @@ data_std_vle %>%
 
 ```{r ash_mutating_join}
 
-ash_data <- left_join(data_std_assess, data_std_info) #joined by id_student
+ash_data <- left_join(data_std_assess, data_std_info, by = "id_student") #joined by id_student
 
 # identify key
 # ash_data %>% 
@@ -148,7 +149,7 @@ ash_data <- ash_data %>%
   summarize(mean_score = mean(score)) %>%
   left_join(ash_data)
 
-ash_data%<>%
+ash_data %<>%
   select(id_student, mean_score, gender:age_band, disability) %>%
   distinct(id_student, .keep_all = TRUE)
 
@@ -168,7 +169,8 @@ ggplot(ash_data, aes(x = age_band, y = mean_score, fill = age_band)) +
   labs(title = "Figure 1.",
        subtitle = "Assessment score distributions by age group and gender",
        x = "Age Group", 
-       y = "Mean Assessment Score") +
+       y = "Mean Assessment Score",
+       caption = "Data from https://analyse.kmi.open.ac.uk/open_dataset") +
   theme(legend.position = "none")
 
 ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_education)) +
@@ -180,7 +182,8 @@ ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_educa
   labs(title = "Figure 2.",
        subtitle = "Assessment score distributions by level of education",
        x = "Education Level", 
-       y = "Mean Assessment Score") +
+       y = "Mean Assessment Score",
+       caption = "Data from https://analyse.kmi.open.ac.uk/open_dataset") +
   theme(legend.position = "none")
 
 ```
