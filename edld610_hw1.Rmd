@@ -35,32 +35,32 @@ options(scipen = 999)
 # load data (7 files total)
 
 data_assess <- import(here::here("data", "assessments.csv"),
-                      setclass = "tbl_df") %>%
+                      setclass = "tibble") %>%
   janitor::clean_names()
 
 data_courses <- import(here::here("data", "courses.csv"),
-                       setclass = "tbl_df") %>% 
+                       setclass = "tibble") %>% 
   janitor::clean_names()
 
 data_std_assess <- import(here::here("data", "studentAssessment.csv"),
-                          setclass = "tbl_df") %>% 
+                          setclass = "tibble") %>% 
   janitor::clean_names()
 
 data_std_info <- import(here::here("data", "studentInfo.csv"),
-               setclass = "tbl_df") %>% 
+               setclass = "tibble") %>% 
   janitor::clean_names()
 
 data_std_regist <- import(here::here("data", "studentRegistration.csv"),
-               setclass = "tbl_df") %>% 
+               setclass = "tibble") %>% 
   janitor::clean_names()
 
 data_std_vle <- import(here::here("data", "studentVle.csv"),
-               setclass = "tbl_df") %>% 
+               setclass = "tibble") %>% 
   janitor::clean_names()
 
 # for some reason, in the data_vle file, the columns for week_from and week_to consist of all NAs????
 data_vle <- import(here::here("data", "vle.csv"),
-               setclass = "tbl_df") %>% 
+               setclass = "tibble") %>% 
   characterize() %>%
   janitor::clean_names()
 
