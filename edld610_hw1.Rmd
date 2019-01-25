@@ -137,7 +137,11 @@ data_std_vle %>%
 
 ```{r mutating_joins}
 
+ash_data <- left_join(data_std_assess, data_std_info) #joined by id_student
 
+ash_data %>% 
+  count(id_assessment, id_student, code_module, code_presentation) %>% #key
+  filter(n > 1)
 
 ```
 
