@@ -273,10 +273,11 @@ data %<>%
   group_by(highest_education, gender, final_result) %>%
   summarize(mean_score = mean(score, na.rm = TRUE))
 
-ggplot(data, aes(x = mean_score, y = highest_education)) +
-  geom_col(aes(fill = gender)) +
-  facet_wrap(~final_result, nrow = 4)
+ggplot(data, aes(x = highest_education, y = mean_score)) +
+  geom_col(aes(fill = gender),
+           position = "dodge") +
+  facet_wrap(~final_result, nrow = 4) +
+  coord_flip()
   
-
 
 ```
