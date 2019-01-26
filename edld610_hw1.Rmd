@@ -275,9 +275,18 @@ data %<>%
 
 ggplot(data, aes(x = highest_education, y = mean_score)) +
   geom_col(aes(fill = gender),
-           position = "dodge") +
+           position = "dodge",
+           alpha = 0.6) +
+  scale_fill_manual(values = c("#10A0AC", "#430E70")) +
   facet_wrap(~final_result, nrow = 4) +
-  coord_flip()
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Average TMA Scores",
+       subtitle = "Results Displayed by Education, Gender, and Final Result Designation",
+       x = "Highest Education", 
+       y = "Average Score",
+       caption = "Data from Kuzilek, Hlosta, & Zdrahal (2017).
+       Data from https://analyse.kmi.open.ac.uk/open_dataset",
+       fill = "Gender")
   
-
 ```
