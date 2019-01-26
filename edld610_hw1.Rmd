@@ -244,7 +244,7 @@ ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
   
 ```
 
-#### 3) Mutating join/data visualization #3
+#### 3) Mutating join/data visualization #3 (Lea's)
 
 ```{r mutatejoin3}
 
@@ -252,7 +252,7 @@ ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
 
 ```
 
-#### 4) Filter join
+#### 4) Filter join (Cam)
 
 ```{r filtering join}
 
