@@ -262,7 +262,7 @@ ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
   
 #### 5) Reproduce the following figure:
 
-```{r reproduce_figure}
+```{r reproduce_figure, fig.height = 7.0}
 
 data <- left_join(data_std_assess, data_std_info, by = "id_student") 
 
