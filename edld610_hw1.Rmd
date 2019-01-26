@@ -264,30 +264,17 @@ ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
 
 ```{r reproduce_figure}
 
-ash_data <- left_join(data_std_assess, data_std_info, by = "id_student") #joined by id_student
+data <- left_join(data_std_assess, data_std_info, by = "id_student") 
 
-# identify key
-# ash_data %>% 
-  # count(id_assessment, id_student, code_module, code_presentation) %>% key
-  # filter(n > 1)
+data$score = as.numeric(data$score)
 
-ash_data <- ash_data %>%
-  group_by(id_student) %>%
-  summarize(mean_score = mean(score)) %>%
-  left_join(ash_data)
+data %<>%
+  select(-date_submitted:-is_banked, -imd_band:-disability) %>%
+  group_by(highest_education, gender, final_result) %>%
+  summarize(mean_score = mean(score, na.rm = TRUE))
 
-ash_data %<>%
-  distinct(id_student, .keep_all = TRUE)
-
-annual_means <- tuition %>%
-  gather(year, avg_tuition, `2004-05`:`2015-16`) %>%
-  group_by(year) %>%
-  summarize(mean_tuition = mean(avg_tuition))
-
-
-ggplot(ash_data, aes(x = score, y = highest_education)) +
-  geom_col(aes(fill = gender),
-               position = "dodge") +
+ggplot(data, aes(x = mean_score, y = highest_education)) +
+  geom_col(aes(fill = gender)) +
   facet_wrap(~final_result, nrow = 4)
   
 
