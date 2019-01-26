@@ -242,9 +242,6 @@ ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
        y = "Mean interactions with VLE",
      caption = "Data from https://analyse.kmi.open.ac.uk/open_dataset")
   
-
-
-
 ```
 
 #### 3) Mutating join/data visualization #3
