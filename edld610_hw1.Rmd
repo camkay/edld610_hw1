@@ -268,10 +268,30 @@ data <- left_join(data_std_assess, data_std_info, by = "id_student")
 
 data$score = as.numeric(data$score)
 
+####################################
+#Reorder levels of highest education
+####################################
+
+#levels(factor(data$highest_education)) 
+
+data$highest_education <- factor(data$highest_education, levels = c("No Formal quals", "Lower Than A Level", "A Level or Equivalent", "HE Qualification", "Post Graduate Qualification"))
+
+###############################
+#Reorder levels of final result
+###############################
+
+#levels(factor(data$final_result)) 
+
+data$final_result <- factor(data$final_result, levels = c("Fail", "Withdrawn", "Pass", "Distinction"))
+
+#Obtain relevant summary stats
+
 data %<>%
   select(-date_submitted:-is_banked, -imd_band:-disability) %>%
   group_by(highest_education, gender, final_result) %>%
   summarize(mean_score = mean(score, na.rm = TRUE))
+
+#Plotting the data
 
 ggplot(data, aes(x = highest_education, y = mean_score)) +
   geom_col(aes(fill = gender),
@@ -288,5 +308,4 @@ ggplot(data, aes(x = highest_education, y = mean_score)) +
        caption = "Data from Kuzilek, Hlosta, & Zdrahal (2017).
        Data from https://analyse.kmi.open.ac.uk/open_dataset",
        fill = "Gender")
-  
 ```
