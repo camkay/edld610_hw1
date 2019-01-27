@@ -9,6 +9,8 @@ output:
     toc: yes
     toc_depth: 4
     toc_float: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -246,16 +248,80 @@ ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
 
 #### 3) Mutating join/data visualization #3 (Lea's)
 
+What I'm interested in looking at is if there is a relationship between how many times students interacted with the VLE material and how well they did on their final exam, and if this relationship depended on whether or not the student had a disability. In other words, did interacting with the VLE material provide an added benefit to students with a disability compared to students without a disability?
+
 ```{r mutatejoin3}
 
+# Filter out those students who passed or failed, ignoring those who withdrew from courses. Not sure what "Distinction" meant so will also exclude those rows. I'm going to use distinct cases of each student, since I'm really only interested in whether or not they have a disability.
+std_info_passfail <- data_std_info %>% 
+  filter(final_result == "Pass" | final_result == "Fail") %>% 
+  distinct(id_student, .keep_all = TRUE) %>% 
+  select(-code_module, -code_presentation)
 
+# Merge data_std_assess and data_assess so that I can link the assessment scores to the right code_module and code_presentation. Average scores across the different assessment types
+std_assess <- left_join(data_std_assess, data_assess, by = "id_assessment") %>% 
+  filter(!is.na(score)) %>% 
+  group_by(id_student, code_module, code_presentation, assessment_type) %>% 
+  summarize(avg_score = mean(score, na.rm = TRUE))
+
+# Take the average VLE interactions for each student in each course, so average sum_click across all materials in a course. The only thing I still don't understand is why student id is unique when there are students that took multiple courses. Missing data? Or just the nature of the different courses, i.e. did some of the courses not have virtual content?
+avg_std_vle <- data_std_vle %>% 
+  group_by(code_module, code_presentation, id_student) %>% 
+  summarize(avg_clicks = mean(sum_click, na.rm = TRUE))
+
+# Merge the number of clicks with the assessment info
+std_assess_clicks <- left_join(std_assess, avg_std_vle, 
+                               by = c("id_student","code_module", "code_presentation")) %>% 
+  filter(!is.na(avg_clicks))
+
+std_assess_clicks %>% 
+  ungroup() %>% 
+  count(assessment_type)
+# Of course I originally tackled this problem trying to look ONLY at final exam scores just to find out there is too much missing data on click information for people that took final exams. Unless I'm doing this wrong?
+
+# Finally, merge the student info with the assessment/VLE data. Will use inner join because I only want observations with all complete data.
+lea_data <- inner_join(std_assess_clicks, std_info_passfail, by = "id_student")
+
+# Ran the figure below and there were definitely outliers, so I decided to use a filtering join to remove outliers for avg_clicks and avg_scores.
+high_scores_filter <- lea_data %>% 
+  ungroup() %>% 
+  filter(avg_score > (mean(avg_score) + 3*sd(avg_score))) # no outliers here
+
+high_clicks_filter <- lea_data %>% 
+  ungroup() %>% 
+  filter(avg_clicks > 15) # I know this is arbitrary, but there were 90 outliers using a criteria of +3 SD, so I just removed that one person that had over 15 clicks
+
+lea_data <- anti_join(lea_data, high_clicks_filter)
+
+# Let's make sure I actually have enough data to do this. 
+lea_data %>% 
+  ungroup() %>% 
+  count(assessment_type, disability)
 
 ```
+
+Random(ish) Question: Will having grouped data affect joins?
+
+```{r lea_dataviz}
+
+lea_data %>% 
+  ggplot(aes(x = avg_clicks, y = avg_score, color = disability)) +
+  geom_point(alpha = .5, size = .6) +
+  geom_smooth(method = "lm", se = TRUE, alpha = .3) +
+  facet_wrap(~assessment_type) +
+  theme_minimal() +
+  scale_color_manual(values = c("lightgrey", "darkslateblue")) +
+  labs(title = "Do Virtual Learning Environments (VLE) Benefit Those with Reported Disabilities?",
+       y = "Average Assessment Scores",
+       x = "VLE Usage \n (average number of clicks)",
+       col = "Disability")
+
+```
+
 
 #### 4) Filter join (Cam)
 
 ```{r filtering join}
-
 
 
 ```
