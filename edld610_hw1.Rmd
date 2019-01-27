@@ -255,8 +255,11 @@ ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
 #### 4) Filter join (Cam)
 
 ```{r filtering join}
+# get registration data for those who only interacted with the VLE once
+(data_std_regist_infrequent <- anti_join(data_std_regist, cam_data))
 
-
+# get registration data for those who only interacted with the VLE more than once
+(data_std_regist_frequent   <- semi_join(data_std_regist, cam_data))
 
 ```
   
@@ -306,6 +309,6 @@ ggplot(data, aes(x = highest_education, y = mean_score)) +
        x = "Highest Education", 
        y = "Average Score",
        caption = "Data from Kuzilek, Hlosta, & Zdrahal (2017).
-       Data from https://analyse.kmi.open.ac.uk/open_dataset",
+       https://analyse.kmi.open.ac.uk/open_dataset",
        fill = "Gender")
 ```
