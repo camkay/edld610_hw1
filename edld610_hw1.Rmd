@@ -140,6 +140,21 @@ data_std_vle %>%
 
 ash_data <- left_join(data_std_assess, data_std_info, by = "id_student") #joined by id_student
 
+# Check that join worked as expected
+nrow(data_std_assess)
+nrow(ash_data) # 😬
+
+# Because we're using a left join here, the resulting data file should have the same number of rows as whatever the left dataset was. This is not the case here.
+
+data_std_assess %>% 
+  count(id_student) %>% 
+  filter(n > 1)
+
+data_std_info %>% 
+  count(id_student) %>% 
+  filter(n > 1)
+
+
 # identify key
 # ash_data %>% 
   # count(id_assessment, id_student, code_module, code_presentation) %>% key
@@ -197,6 +212,10 @@ ggplot(ash_data, aes(x = highest_education, y = mean_score, fill = highest_educa
 # join student information with student vle use
 cam_data <- left_join(data_std_info, data_std_vle, by = "id_student")
 
+# Check that join worked
+nrow(data_std_info)
+nrow(cam_data) # 😕
+
 # drop redundant columns
 cam_data %<>%
   select(-contains(".y"))
@@ -236,7 +255,7 @@ ggplot(cam_data, aes(x = imd_band_num, y = sum_click_m)) +
         strip.text = element_text(colour = "white"),
         legend.position = "none") +
   ylim(0, 10) +
-  scale_color_gradient2(low = "cyan", mid = "dodgerblue3", high = "dodgerblue3", midpoint = 8) +
+  scale_color_gradient2(low = "cyan", mid = "dodgerblue3", high = "dodgerblue3", midpoint = 8) + # Does this add anything or just look pretty? Not that looking pretty is bad, but could perhaps be misleading because gradient often indicates an additional variable.
   facet_grid(~region) +
   labs(title = "Figure 3.",
        subtitle = "Relationship between deprivation and amount of engagement with VLE materials",
@@ -263,6 +282,10 @@ std_assess <- left_join(data_std_assess, data_assess, by = "id_assessment") %>%
   filter(!is.na(score)) %>% 
   group_by(id_student, code_module, code_presentation, assessment_type) %>% 
   summarize(avg_score = mean(score, na.rm = TRUE))
+
+# Check that join worked 
+nrow(data_std_assess)
+nrow(std_assess)
 
 # Take the average VLE interactions for each student in each course, so average sum_click across all materials in a course. The only thing I still don't understand is why student id is unique when there are students that took multiple courses. Missing data? Or just the nature of the different courses, i.e. did some of the courses not have virtual content?
 avg_std_vle <- data_std_vle %>% 
@@ -302,6 +325,8 @@ lea_data %>%
 
 Random(ish) Question: Will having grouped data affect joins?
 
+<!-- No, not as far as I'm aware. -->
+
 ```{r lea_dataviz}
 
 lea_data %>% 
@@ -335,6 +360,9 @@ lea_data %>%
 ```{r reproduce_figure, fig.height = 7.0}
 
 data <- left_join(data_std_assess, data_std_info, by = "id_student") 
+
+nrow(data_std_assess)
+nrow(data)
 
 data$score = as.numeric(data$score)
 
@@ -378,4 +406,46 @@ ggplot(data, aes(x = highest_education, y = mean_score)) +
        caption = "Data from Kuzilek, Hlosta, & Zdrahal (2017).
        https://analyse.kmi.open.ac.uk/open_dataset",
        fill = "Gender")
+
+
+################## Here's the code I (Daniel) used to produce the plot
+# data_assess %>%
+# 	count(id_assessment) %>%
+# 	filter(n > 1)
+
+# data_std_assess %>%
+# 	count(id_student, id_assessment) %>%
+# 	filter(n > 1)
+
+# data_std_info %>%
+# 	count(code_module, code_presentation, id_student) %>%
+# 	filter(n > 1)
+
+d <- left_join(data_std_assess, data_assess) %>%
+	left_join(data_std_info)
+
+# nrow(data_std_assess)
+# nrow(d)
+
+pd <- d %>%
+	filter(assessment_type == "TMA") %>%
+	group_by(highest_education, final_result, gender) %>%
+	summarize(mean_score = mean(score, na.rm = TRUE)) %>%
+	ungroup() %>% 
+	mutate(highest_education = fct_reorder(highest_education, mean_score),
+	       final_result = fct_reorder(final_result, mean_score)) %>%
+	rename(Gender = gender)
+
+ggplot(pd, aes(highest_education, mean_score)) +
+	geom_col(aes(fill = Gender), alpha = 0.7, position = "dodge") +
+	coord_flip() +
+	facet_wrap(~final_result, ncol = 1) +
+	scale_fill_brewer(palette = "Set2") +
+	theme_minimal() +
+	labs(y = "Average Score",
+	     x = "Highest Education",
+	     title = "Average TMA Scores",
+	     subtitle = "Results displayed by Education, gender, and Final Result Designation",
+	     caption = "Data from Kuzilek, Hlosta, & Zdrahal (2017). \nhttps://analyse.kmi.open.ac.uk/open_dataset")
+
 ```
